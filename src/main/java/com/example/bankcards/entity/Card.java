@@ -1,13 +1,12 @@
 package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
-import jakarta.transaction.Transaction;
 import lombok.*;
-import org.apache.catalina.User;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cards")
@@ -21,14 +20,17 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "encrypt number", nullable = false)
-    private String encryptNumber;
+    @Column(name = "card_number", nullable = false)
+    private String cardNumber;
 
-    @Column(name = "masked_number", nullable = false, length = 19)
-    private String maskedNumber;
+    @Column(name = "card_holder_name", nullable = false)
+    private String cardHolderName;
 
-    @Column(name = "expire_date", nullable = false)
-    private LocalDate expireDate;
+    @Column(name = "expiration_date", nullable = false)
+    private String expirationDate;
+
+    @Column(nullable = false)
+    private String cvv;
 
     @Column(nullable = false)
     private BigDecimal balance;
@@ -41,9 +43,8 @@ public class Card {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "fromCard", cascade = CascadeType.ALL)
-    private List<Transaction> outGoingTransactions;
-
-    @OneToMany(mappedBy = "toCard", cascade = CascadeType.ALL)
-    private List<Transaction> incomingTransactions;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
+
