@@ -4,6 +4,8 @@ import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.BadRequestException;
+import com.example.bankcards.exception.ResourceNotFoundException;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -56,16 +58,14 @@ public class CardService {
     public CardDto createCard(CardDto cardDto) {
         User user = getCurrentUser();
 
-        if (cardRepository.existsByCardNumber(cardDto.getCardNumber())) {
+        String encryptedNumber = cardNumberEncryptor.encrypt(cardDto.getCardNumber());
+        if (cardRepository.existsByCardNumber(encryptedNumber)) {
             throw new BadRequestException("Card with this number already exists");
         }
-
         Card card = cardMapper.toEntity(cardDto);
         card.setUser(user);
         card.setStatus(CardStatus.ACTIVE);
-
-        // Encrypt card number before saving
-        card.setCardNumber(cardNumberEncryptor.encrypt(card.getCardNumber()));
+        card.setCardNumber(encryptedNumber);
 
         Card savedCard = cardRepository.save(card);
         return cardMapper.toDto(maskCardNumber(savedCard));
@@ -135,10 +135,13 @@ public class CardService {
     }
 
     private Card maskCardNumber(Card card) {
-        String encryptedNumber = card.getCardNumber();
-        String decryptedNumber = cardNumberEncryptor.decrypt(encryptedNumber);
-        String maskedNumber = "**** **** **** " + decryptedNumber.substring(12);
-        card.setCardNumber(maskedNumber);
+        try {
+            String decryptedNumber = cardNumberEncryptor.decrypt(card.getCardNumber());
+            String maskedNumber = "**** **** **** " + decryptedNumber.substring(12);
+            card.setCardNumber(maskedNumber);
+        } catch (Exception e) {
+            card.setCardNumber("**** **** **** ****");
+        }
         return card;
     }
 
