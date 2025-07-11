@@ -1,12 +1,11 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:13
+    container_name: postgres
     environment:
-      POSTGRES_DB: card_management
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 161092
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: card_management
     ports:
       - "5432:5432"
     volumes:
@@ -18,24 +17,19 @@ services:
       retries: 5
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/card_management
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-    networks:
-      - card-network
+    volumes:
+      - ./target:/app/target
 
 volumes:
   postgres_data:
-
-networks:
-  card-network:
-    driver: bridge

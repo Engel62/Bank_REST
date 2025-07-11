@@ -10,62 +10,93 @@
 
 ## Запуск приложения
 
-1. Клонируйте репозиторий
-2. Перейдите в директорию проекта
-3. Запустите приложение с помощью Docker Compose:
+# Bank Card Management System
 
-```bash
-docker-compose up -d
-Приложение будет доступно по адресу: http://localhost:8080
+Система управления банковскими картами с аутентификацией JWT и возможностью денежных переводов.
 
-API Документация
-После запуска приложения документация API будет доступна по адресу:
+## Технологии
+- Java 17
+- Spring Boot 3.2.0
+- Spring Security
+- Spring Data JPA
+- PostgreSQL 13
+- Liquibase 
+- Docker + Docker Compose
+- OpenAPI 3.0 (Swagger UI)
+
+## Требования
+- JDK 17+
+- Maven 3.9+
+- Docker 20+ и Docker Compose
+- PostgreSQL 13 (или использовать контейнер)
+
+## Быстрый запуск через Docker
+
+1. Клонируйте репозиторий:
+git clone https://github.com/ваш-репозиторий.git
+cd bank-card-system
+2. Запустите сервисы:
+   docker-compose up -d
+   Приложение будет доступно: http://localhost:8080
+
+
+
+## Сборка и запуск
+
+mvn clean package
+java -jar target/bank-card-system-0.0.1.jar
+
+
+
 
 Swagger UI: http://localhost:8080/swagger-ui.html
 
 OpenAPI спецификация: http://localhost:8080/v3/api-docs
 
-Тестирование
-Для запуска тестов выполните:
-
-bash
-./mvnw test
 Аутентификация
 Зарегистрируйте пользователя:
 
-POST /api/auth/signup
-
-json
-{
+bash
+curl -X POST "http://localhost:8080/api/auth/signup" \
+-H "Content-Type: application/json" \
+-d '{
   "username": "user",
   "password": "password",
-  "fullName": "User Name",
-  "roles": ["user"]
-}
-Авторизуйтесь для получения JWT токена:
+  "fullName": "Test User"
+}'
+Получите токен:
 
-POST /api/auth/signin
-
-json
-{
+bash
+curl -X POST "http://localhost:8080/api/auth/signin" \
+-H "Content-Type: application/json" \
+-d '{
   "username": "user",
   "password": "password"
-}
-Используйте полученный токен в заголовке Authorization: Bearer <token> для доступа к защищенным endpoint'ам.
+}'
+Используйте полученный токен в заголовке:
 
-Функциональность
-Администратор
-Управление пользователями
+text
+Authorization: Bearer <ваш_токен>
+Администрирование
+Для доступа к админ-панели создайте пользователя с ролью ADMIN:
 
-Создание, блокировка, активация, удаление карт
+bash
+curl -X POST "http://localhost:8080/api/auth/signup" \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "admin",
+  "password": "admin123",
+  "fullName": "Admin",
+  "roles": ["admin"]
+}'
+Остановка сервисов
+bash
+docker-compose down
+Логи
+Просмотр логов приложения:
 
-Просмотр всех карт
+docker logs bank-card-app
+Просмотр логов БД:
 
-Пользователь
-Просмотр своих карт (с пагинацией)
-
-Запрос блокировки карты
-
-Переводы между своими картами
-
-Просмотр баланса
+bash
+docker logs postgres-db
