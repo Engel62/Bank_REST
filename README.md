@@ -7,9 +7,7 @@
 - Java 17+
 - Docker и Docker Compose
 - Maven
-# Bank Card Management System
 
-Система управления банковскими картами с аутентификацией JWT и возможностью денежных переводов.
 
 ## Технологии
 - Java 17
