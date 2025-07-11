@@ -7,9 +7,6 @@
 - Java 17+
 - Docker и Docker Compose
 - Maven
-
-## Запуск приложения
-
 # Bank Card Management System
 
 Система управления банковскими картами с аутентификацией JWT и возможностью денежных переводов.
@@ -32,23 +29,34 @@
 
 ## Быстрый запуск через Docker
 
-1. Клонируйте репозиторий:
-git clone https://github.com/ваш-репозиторий.git
-cd bank-card-system
+### 1. Запуск через Docker (рекомендуется)
+
+git clone https://github.com/Engel62/Bank_REST.git
+cd Bank_REST
+docker-compose up -d
+
 2. Запустите сервисы:
    docker-compose up -d
    Приложение будет доступно: http://localhost:8080
 
+## Ручная установка
+Требования:
 
+JDK 17+
 
-## Сборка и запуск
+PostgreSQL 13+
 
+Maven 3.9+
+
+bash
+# Сборка
 mvn clean package
-java -jar target/bank-card-system-0.0.1.jar
 
+# Настройка БД
+psql -U postgres -c "CREATE DATABASE bank_rest;"
 
-
-
+# Запуск
+java -jar target/Bank_REST-0.0.1.jar
 ### Swagger UI: 
 http://localhost:8080/swagger-ui.html
 
