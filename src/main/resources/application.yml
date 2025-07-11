@@ -12,7 +12,7 @@ spring:
       hibernate:
         format_sql: true
   liquibase:
-    change-log: classpath:db/migration/master.xml
+    change-log: classpath:db.migration/master.xml
     enabled: true
 
 app:
@@ -24,3 +24,11 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.example.cardmanagement: DEBUG
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha

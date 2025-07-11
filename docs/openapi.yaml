@@ -1,1 +1,251 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.3
+info:
+  title: Card Management API
+  description: API для управления банковскими картами, пользователями и транзакциями
+  version: 1.0.0
+  contact:
+    email: api@bankcards.com
+    name: API Support
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: Регистрация и аутентификация пользователей
+  - name: Cards
+    description: Управление банковскими картами
+  - name: Transactions
+    description: Операции с переводами между картами
+  - name: Users
+    description: Управление пользователями (для администраторов)
+
+paths:
+  /auth/signup:
+    post:
+      tags: [Authentication]
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Пользователь успешно зарегистрирован
+        '400':
+          description: Неверные данные для регистрации
+
+  /auth/signin:
+    post:
+      tags: [Authentication]
+      summary: Аутентификация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Неверные учетные данные
+
+  /cards:
+    get:
+      tags: [Cards]
+      summary: Получить список карт текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список карт
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardDto'
+    post:
+      tags: [Cards]
+      summary: Создать новую карту
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardDto'
+      responses:
+        '201':
+          description: Карта успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+
+  /cards/{id}:
+    get:
+      tags: [Cards]
+      summary: Получить информацию о карте
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о карте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '404':
+          description: Карта не найдена
+
+  /transactions:
+    post:
+      tags: [Transactions]
+      summary: Создать перевод между картами
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDto'
+      responses:
+        '201':
+          description: Перевод выполнен успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDto'
+        '400':
+          description: Ошибка при выполнении перевода
+
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      required:
+        - username
+        - password
+        - fullName
+      properties:
+        username:
+          type: string
+          example: "user123"
+        password:
+          type: string
+          example: "securePassword123"
+        fullName:
+          type: string
+          example: "Иван Иванов"
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [user, admin]
+          example: ["user"]
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: "user123"
+        password:
+          type: string
+          example: "securePassword123"
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        type:
+          type: string
+          example: "Bearer"
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "user123"
+        fullName:
+          type: string
+          example: "Иван Иванов"
+        role:
+          type: string
+          example: "ROLE_USER"
+
+    CardDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        cardNumber:
+          type: string
+          example: "**** **** **** 1234"
+        cardHolderName:
+          type: string
+          example: "IVAN IVANOV"
+        expirationDate:
+          type: string
+          example: "12/25"
+        cvv:
+          type: string
+          example: "123"
+        balance:
+          type: number
+          format: double
+          example: 1000.50
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED, EXPIRED]
+          example: "ACTIVE"
+
+    TransactionDto:
+      type: object
+      required:
+        - amount
+        - fromCardId
+        - toCardId
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 100.50
+        fromCardId:
+          type: integer
+          example: 1
+        toCardId:
+          type: integer
+          example: 2
+        description:
+          type: string
+          example: "Перевод средств"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
