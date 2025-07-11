@@ -11,7 +11,7 @@ import java.util.Base64;
 @Component
 public class CardNumberEncryptor {
 
-    @Value("${app.encryption.key}")
+    @Value("${app.encryption.key:default-encryption-key-32-chars}")
     private String encryptionKey;
 
     private static final String ALGORITHM = "AES";

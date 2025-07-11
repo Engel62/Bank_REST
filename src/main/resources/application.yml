@@ -12,13 +12,15 @@ spring:
       hibernate:
         format_sql: true
   liquibase:
-    change-log: classpath:/db.migration/master.xml
+    change-log: classpath:db/migration/master.xml
     enabled: true
 
 app:
+  encryption:
+    key: your-strong-encryption-key-32-chars # Должен быть 32 символа для AES-256
   jwt:
     secret: your-secret-key-here-1234567890
-    expiration-ms: 86400000 # 24 hours
+    expiration-ms: 86400000
 
 logging:
   level:
