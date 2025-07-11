@@ -49,14 +49,14 @@ java -jar target/bank-card-system-0.0.1.jar
 
 
 
-Swagger UI: http://localhost:8080/swagger-ui.html
+### Swagger UI: 
+http://localhost:8080/swagger-ui.html
 
-OpenAPI спецификация: http://localhost:8080/v3/api-docs
-Логи
+### OpenAPI спецификация: 
+http://localhost:8080/v3/api-docs
+### Логи
 Просмотр логов приложения:
-
 docker logs bank-card-app
-Просмотр логов БД:
 
-bash
+Просмотр логов БД:
 docker logs postgres-db
